@@ -33,13 +33,6 @@
     NSMutableArray<CHCertificate *>* certificates;
 }
 
-/**
- *  Retrieve the certificate chain for the specified URL
- *
- *  @param URL      The URL to retrieve
- *  @param finished Called when the network request has completed with either an error or an array
- *                  of certificates
- */
 - (void) fromURL:(NSString *)URL finished:(void (^)(NSError * error,
                                                     NSArray<CHCertificate *>* certificates,
                                                     BOOL trustedChain))finished {
@@ -72,13 +65,6 @@
     completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
 }
 
-/**
- *  Creates a new CHCertificate object with the certificate reference
- *
- *  @param cert A SecCertificateRef reference to the cert object
- *
- *  @return an instatiated CHCertificate object
- */
 + (CHCertificate *) withCertificateRef:(SecCertificateRef)cert {
     CHCertificate * certificate = [CHCertificate new];
     certificate.cert = cert;
@@ -97,45 +83,18 @@
     return resultType == kSecTrustResultUnspecified;
 }
 
-/**
- *  Returns the SHA256 fingerprint for the certificate
- *
- *  @return A NSString value of the fingerprint
- */
 - (NSString *) SHA256Fingerprint {
     return [self fingerprintWithType:kFingerprintTypeSHA256];
 }
 
-/**
- *  Returns the MD5 fingerprint for the certificate
- *
- *  Warning! The security of the MD5 algorithm has been seriously compromised - avoid use!
- *
- *  @return A NSString value of the fingerprint
- */
 - (NSString *) MD5Fingerprint {
     return [self fingerprintWithType:kFingerprintTypeMD5];
 }
 
-/**
- *  Returns the SHA1 fingerprint for the certificate
- *
- *  Warning! SH1 is no longer considered cryptographically secure - avoide use!
- *
- *  @return A NSString value of the fingerprint
- */
 - (NSString *) SHA1Fingerprint {
     return [self fingerprintWithType:kFingerprintTypeSHA1];
 }
 
-/**
- *  Verify the fingerprint of the certificate. Useful for certificate pinning.
- *
- *  @param fingerprint The fingerprint
- *  @param type        The type of hashing algrotim used to generate the fingerprint
- *
- *  @return YES if verified
- */
 - (BOOL) verifyFingerprint:(NSString *)fingerprint type:(kFingerprintType)type {
     NSString * currentFingerprint;
     NSString * expectedFingerprint = fingerprint;
@@ -158,11 +117,6 @@
     return [currentFingerprint isEqualToString:expectedFingerprint];
 }
 
-/**
- *  Returns the serial number for the certificate
- *
- *  @return A NSString value of the serial number
- */
 - (NSString *) serialNumber {
     NSMutableString * s = [NSMutableString new];
     int length = (int)self.X509Certificate->cert_info->serialNumber->length;
@@ -173,11 +127,6 @@
     return s;
 }
 
-/**
- *  Returns the human readable signature algorithm
- *
- *  @return A NSString value of the algorithm
- */
 - (NSString *) algorithm {
     X509_ALGOR * sig_type = self.X509Certificate->sig_alg;
     char buffer[128];
@@ -232,11 +181,6 @@
     }
 }
 
-/**
- *  Retuns the issuer name
- *
- *  @return A NSString value of the issuer identity
- */
 - (NSString *) issuer {
     X509_NAME *issuerX509Name = X509_get_issuer_name(self.X509Certificate);
 
@@ -258,20 +202,10 @@
     return @"";
 }
 
-/**
- *  Returns the expiry date for the certificate
- *
- *  @return A NSDate object for the "not after" field - Time is not critical for this date object.
- */
 - (NSDate *) notAfter {
     return [self dateFromASNTIME:X509_get_notAfter(self.X509Certificate)];
 }
 
-/**
- *  Returns the start date for the certificate
- *
- *  @return A NSDate object for the "not before" field - Time is not critical for this date object.
- */
 - (NSDate *) notBefore {
     return [self dateFromASNTIME:X509_get_notBefore(self.X509Certificate)];
 }
@@ -308,11 +242,6 @@
     return nil;
 }
 
-/**
- *  Test if current date is within the certificates issue date range
- *
- *  @return current date within range?
- */
 - (BOOL) validIssueDate {
     BOOL valid = YES;
     if ([self.notBefore timeIntervalSinceNow] > 0) {
@@ -324,11 +253,6 @@
     return valid;
 }
 
-/**
- *  Retruns an array of dictionaries with the subjet names, and name types (OU or CN)
- *
- *  @return An array of dictionaries: [ { "type": "OU", "name": "*.foo" } ]
- */
 - (NSArray<NSDictionary *> *) names {
     NSString * namesString = [NSString stringWithUTF8String:self.X509Certificate->name];
     NSMutableArray * names = [NSMutableArray new];
