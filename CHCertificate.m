@@ -264,7 +264,7 @@
  *  @return A NSDate object for the "not after" field - Time is not critical for this date object.
  */
 - (NSDate *) notAfter {
-    return [NSDate fromASNTIME:X509_get_notAfter(self.X509Certificate)];
+    return [self dateFromASNTIME:X509_get_notAfter(self.X509Certificate)];
 }
 
 /**
@@ -273,7 +273,39 @@
  *  @return A NSDate object for the "not before" field - Time is not critical for this date object.
  */
 - (NSDate *) notBefore {
-    return [NSDate fromASNTIME:X509_get_notBefore(self.X509Certificate)];
+    return [self dateFromASNTIME:X509_get_notBefore(self.X509Certificate)];
+}
+
+- (NSDate *) dateFromASNTIME:(ASN1_TIME *)time {
+    // Source: http://stackoverflow.com/a/8903088/1112669
+    ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(time, NULL);
+    if (certificateExpiryASN1Generalized != NULL) {
+        unsigned char *certificateExpiryData = ASN1_STRING_data(certificateExpiryASN1Generalized);
+
+        // ASN1 generalized times look like this: "20131114230046Z"
+        //                                format:  YYYYMMDDHHMMSS
+        //                               indices:  01234567890123
+        //                                                   1111
+        // There are other formats (e.g. specifying partial seconds or
+        // time zones) but this is good enough for our purposes since
+        // we only use the date and not the time.
+        //
+        // (Source: http://www.obj-sys.com/asn1tutorial/node14.html)
+
+        NSString *expiryTimeStr = [NSString stringWithUTF8String:(char *)certificateExpiryData];
+        NSDateComponents *expiryDateComponents = [[NSDateComponents alloc] init];
+
+        expiryDateComponents.year   = [[expiryTimeStr substringWithRange:NSMakeRange(0, 4)] intValue];
+        expiryDateComponents.month  = [[expiryTimeStr substringWithRange:NSMakeRange(4, 2)] intValue];
+        expiryDateComponents.day    = [[expiryTimeStr substringWithRange:NSMakeRange(6, 2)] intValue];
+        expiryDateComponents.hour   = [[expiryTimeStr substringWithRange:NSMakeRange(8, 2)] intValue];
+        expiryDateComponents.minute = [[expiryTimeStr substringWithRange:NSMakeRange(10, 2)] intValue];
+        expiryDateComponents.second = [[expiryTimeStr substringWithRange:NSMakeRange(12, 2)] intValue];
+
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        return [calendar dateFromComponents:expiryDateComponents];
+    }
+    return nil;
 }
 
 /**
