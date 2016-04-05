@@ -27,7 +27,6 @@
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonCrypto.h>
 #import <openssl/x509.h>
-#import "NSDate+ASN1_TIME.h"
 
 @interface CHCertificate : NSObject <NSURLSessionDelegate> {
     NSData * certificateData;
