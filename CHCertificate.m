@@ -39,29 +39,36 @@
     finishedCallback = finished;
     certificates = [NSMutableArray new];
     NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL URLWithString:URL]];
-    NSURLSession * session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
-    [[session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSURLSession * session = [NSURLSession sessionWithConfiguration:
+        [NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:nil];
+    [[session dataTaskWithRequest:request completionHandler:
+    ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             finishedCallback(error, certificates, NO);
         }
     }] resume];
 }
 
-- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler {
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+- (void)URLSession:(NSURLSession *)session
+    didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+    completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition,
+                                NSURLCredential * __nullable credential))completionHandler {
+    if ([challenge.protectionSpace.authenticationMethod
+            isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = challenge.protectionSpace.serverTrust;
         SecTrustEvaluate(trust, NULL);
         long count = SecTrustGetCertificateCount(trust);
         for (int i = 0; i < count; i++) {
-            CHCertificate * certificate = [CHCertificate withCertificateRef:SecTrustGetCertificateAtIndex(trust, i)];
+            CHCertificate * certificate = [CHCertificate withCertificateRef:
+                SecTrustGetCertificateAtIndex(trust, i)];
             certificate.host = challenge.protectionSpace.host;
             [certificates addObject:certificate];
         }
         finishedCallback(nil, certificates, [CHCertificate trustedChain:trust]);
     }
 
-    NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+    NSURLCredential *credential = [NSURLCredential credentialForTrust:
+        challenge.protectionSpace.serverTrust];
     completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
 }
 
@@ -109,7 +116,8 @@
             currentFingerprint = @"";
     }
     NSString * (^formatFingerprint)(NSString *) = ^NSString *(NSString * fingerprint) {
-        return [[fingerprint lowercaseString] stringByReplacingOccurrencesOfString:@" " withString:@""];
+        return [[fingerprint lowercaseString] stringByReplacingOccurrencesOfString:@" "
+            withString:@""];
     };
     currentFingerprint = formatFingerprint(currentFingerprint);
     expectedFingerprint = formatFingerprint(expectedFingerprint);
@@ -163,7 +171,8 @@
         [fingerprint appendFormat:@"%02x ",buffer[i]];
     }
 
-    return [[fingerprint stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] uppercaseString];
+    return [[fingerprint stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+        uppercaseString];
 }
 
 - (NSUInteger)lengthWithType:(kFingerprintType)type
@@ -212,7 +221,8 @@
 
 - (NSDate *) dateFromASNTIME:(ASN1_TIME *)time {
     // Source: http://stackoverflow.com/a/8903088/1112669
-    ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(time, NULL);
+    ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(time,
+        NULL);
     if (certificateExpiryASN1Generalized != NULL) {
         unsigned char *certificateExpiryData = ASN1_STRING_data(certificateExpiryASN1Generalized);
 
@@ -229,12 +239,18 @@
         NSString *expiryTimeStr = [NSString stringWithUTF8String:(char *)certificateExpiryData];
         NSDateComponents *expiryDateComponents = [[NSDateComponents alloc] init];
 
-        expiryDateComponents.year   = [[expiryTimeStr substringWithRange:NSMakeRange(0, 4)] intValue];
-        expiryDateComponents.month  = [[expiryTimeStr substringWithRange:NSMakeRange(4, 2)] intValue];
-        expiryDateComponents.day    = [[expiryTimeStr substringWithRange:NSMakeRange(6, 2)] intValue];
-        expiryDateComponents.hour   = [[expiryTimeStr substringWithRange:NSMakeRange(8, 2)] intValue];
-        expiryDateComponents.minute = [[expiryTimeStr substringWithRange:NSMakeRange(10, 2)] intValue];
-        expiryDateComponents.second = [[expiryTimeStr substringWithRange:NSMakeRange(12, 2)] intValue];
+        expiryDateComponents.year   = [[expiryTimeStr substringWithRange:NSMakeRange(0, 4)]
+            intValue];
+        expiryDateComponents.month  = [[expiryTimeStr substringWithRange:NSMakeRange(4, 2)]
+            intValue];
+        expiryDateComponents.day    = [[expiryTimeStr substringWithRange:NSMakeRange(6, 2)]
+            intValue];
+        expiryDateComponents.hour   = [[expiryTimeStr substringWithRange:NSMakeRange(8, 2)]
+            intValue];
+        expiryDateComponents.minute = [[expiryTimeStr substringWithRange:NSMakeRange(10, 2)]
+            intValue];
+        expiryDateComponents.second = [[expiryTimeStr substringWithRange:NSMakeRange(12, 2)]
+            intValue];
 
         NSCalendar *calendar = [NSCalendar currentCalendar];
         return [calendar dateFromComponents:expiryDateComponents];
