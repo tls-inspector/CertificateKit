@@ -254,13 +254,17 @@
 }
 
 - (NSArray<NSDictionary *> *) names {
-    NSString * namesString = [NSString stringWithUTF8String:self.X509Certificate->name];
+    NSString * namesString = [[NSString stringWithUTF8String:self.X509Certificate->name]
+                              stringByReplacingOccurrencesOfString:@" / " withString:@"\\"];
     NSMutableArray * names = [NSMutableArray new];
     NSArray * nameTypes;
     for (NSString * nameComponent in [namesString componentsSeparatedByString:@"/"]) {
         if (![nameComponent isEqualToString:@""]) {
             nameTypes = [nameComponent componentsSeparatedByString:@"="];
-            [names addObject:@{@"type": nameTypes[0], @"name": nameTypes[1]}];
+            [names addObject:@{
+                @"type": nameTypes[0],
+                @"name": [nameTypes[1] stringByReplacingOccurrencesOfString:@"\\" withString:@" / "]
+            }];
         }
     }
     return [NSArray arrayWithArray:names];
