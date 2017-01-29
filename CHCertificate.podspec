@@ -16,8 +16,7 @@ Pod::Spec.new do |s|
         :git => "https://github.com/certificate-helper/CHCertificate.git",
         :tag => s.version.to_s
     }
-    s.source_files = 'Classes/*.{h,m}'
-    s.public_header_files = 'Classes/*.h'
+    s.source_files = 'Classes/*.*'
     s.requires_arc = true
     s.ios.deployment_target = '9.3'
 
