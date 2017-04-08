@@ -29,6 +29,9 @@
 
 @interface CKCertificateChain : NSObject
 
+/**
+ The trust status of the certificate.
+ */
 typedef NS_ENUM(NSInteger, CKCertificateChainTrustStatus) {
     /**
      The system trusts this certificate

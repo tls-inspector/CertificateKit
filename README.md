@@ -15,7 +15,7 @@ The primary goal with CertificateKit is to provide an easy-to-use front-end to O
 
 To get a chain of certificates (Root, Intermediate, and Server) for a given URL:
 
-```objectivec
+```objc
 self.chain = [CKCertificateChain new];
 
 [self.chain
