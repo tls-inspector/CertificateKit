@@ -4,6 +4,8 @@ CertificateKit is an advanced iOS library for working with SSL/TLS X.509 certifi
 
 The primary goal with CertificateKit is to provide an easy-to-use front-end to OpenSSLs X.509 APIs.
 
+[API Reference](https://tlsinspector.com/docs/index.html)
+
 ## Installation
 
 **Due to the complex nature of CertificateKit, it cannot be installed using Cocoapods and must be installed manually.**
@@ -74,3 +76,5 @@ chain.certificateChain(from: URL(string: "https://tls-inspector.com")!) { (error
     }
 }
 ```
+
+For more information see the [API Reference](https://tlsinspector.com/docs/index.html).
