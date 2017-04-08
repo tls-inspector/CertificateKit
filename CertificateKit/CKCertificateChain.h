@@ -27,6 +27,9 @@
 #import <Foundation/Foundation.h>
 #import "CKCertificate.h"
 
+/**
+ A chain of CKCertificate objects and metadata about the chain
+ */
 @interface CKCertificateChain : NSObject
 
 /**

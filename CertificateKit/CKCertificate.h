@@ -52,13 +52,21 @@ typedef NSArray<NSURL *> distributionPoints;
  *  Finger (thumb) print types that CKCertificate can export
  */
 typedef NS_ENUM(NSInteger, CKCertificateFingerprintType) {
-    // SHA 512 fingerprint type
+    /**
+     * SHA 512 fingerprint type
+     */
     CKCertificateFingerprintTypeSHA512,
-    // SHA 256 fingerprint type
+    /**
+     * SHA 512 fingerprint type
+     */
     CKCertificateFingerprintTypeSHA256,
-    // MD5 fingerprint type
+    /**
+     * SHA 512 fingerprint type
+     */
     CKCertificateFingerprintTypeMD5,
-    // SHA1 fingerprint type
+    /**
+     * SHA 512 fingerprint type
+     */
     CKCertificateFingerprintTypeSHA1
 };
 

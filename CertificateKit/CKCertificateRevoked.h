@@ -29,6 +29,9 @@
 
 @class CKCertificate;
 
+/**
+ Revocation information about a CKCertificate
+ */
 @interface CKCertificateRevoked : NSObject
 
 /**

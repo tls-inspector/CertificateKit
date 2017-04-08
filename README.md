@@ -15,11 +15,13 @@ The primary goal with CertificateKit is to provide an easy-to-use front-end to O
 
 To get a chain of certificates (Root, Intermediate, and Server) for a given URL:
 
+### Objective-C:
+
 ```objc
 self.chain = [CKCertificateChain new];
 
 [self.chain
- certificateChainFromURL:[NSURL URLWithString:@""]
+ certificateChainFromURL:[NSURL URLWithString:@"https://tls-inspector.com"]
  finished:^(NSError * _Nullable error, CKCertificateChain * _Nullable chain) {
      if (error) {
          // Do something
@@ -43,10 +45,12 @@ self.chain = [CKCertificateChain new];
  }];
 ```
 
+### Swift:
+
 ```swift
 let chain: CKCertificateChain = CKCertificateChain()
 
-chain.certificateChain(from: URL(string: "")!) { (error, chain) in
+chain.certificateChain(from: URL(string: "https://tls-inspector.com")!) { (error, chain) in
     if error != nil {
         // Do something
     }
